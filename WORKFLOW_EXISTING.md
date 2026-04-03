@@ -22,7 +22,7 @@ sgn-obo file into a breedbase instance.
 
 2) Generate the **Trait Dictionary** and/or **standard-obo** files:
     
-    `perl build_traits.pl -t traits.csv -o traits.obo -u DJW -i T3 --use-preferred-synonyms -v traits.xlsx`
+    `perl build_traits.pl -t traits.csv -o traits.obo -u DJW -i T3 --use-preferred-synonyms --use-context-properties -v traits.xlsx`
 
      > The `traits.csv` file can be used to update the Crop Ontology website
 
@@ -31,6 +31,8 @@ sgn-obo file into a breedbase instance.
      > The `-i T3` option filters the variables by the Institution column and will only include variables that contain T3 as the Institution.
 
      > The `--use-preferred-synonyms` option will use the 'Preferred synonym' column as the variable synonym instead of the 'Variable synonyms' column
+
+     > The '--use-context-properies' option will add "Context of use", "Growth stage" and "Status" tags to variable definitions
 
 3) Convert the **standard-obo** file to an **sgn-obo** file:
     
