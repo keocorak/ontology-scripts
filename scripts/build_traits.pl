@@ -6,7 +6,7 @@ build_traits.pl
 
 =head1 SYNOPSIS
 
-Usage: perl build_traits.pl [-o output -u username] [-t output] [-i institution] [-c category count] [--use-preferred-synonyms] [-fqv] file 
+Usage: perl build_traits.pl [-o output -u username] [-t output] [-i institution] [-c category count] [--use-preferred-synonyms] [--use-context-properties] [-fqv]  file 
 
 Options/Arguments:
 
@@ -48,6 +48,10 @@ use the preferred synonym instead of the variable synonyms for the variable term
 =item -v
 
 verbose output
+
+=item --use-context-properties
+
+add context properties to the variable terms
 
 =item file
 
@@ -94,7 +98,7 @@ my @TW_SHEETS = ("Variables","Traits","Methods","Scales","Trait Classes","Root")
 
 # Set Trait Workbook Required and Unique Columns
 my %TW_RULES;
-$TW_RULES{"Variables"}{required} = ["Variable ID","Variable name","Trait name","Method name","Scale name"];
+$TW_RULES{"Variables"}{required} = ["Variable ID","Variable name","Context of use", "Growth stage", "Variable status", "Trait name","Method name","Scale name"];
 $TW_RULES{"Variables"}{unique} = ["Variable ID","Variable name","Variable synonyms","VARIABLE KEY"];
 $TW_RULES{"Traits"}{required} = ["Trait ID","Trait name","Trait class"];
 $TW_RULES{"Traits"}{unique} = ["Trait ID","Trait name"];
@@ -126,7 +130,7 @@ my $CO_ID_LENGTH = 7;
 my $OBO_VERSION = 1.2;
 my @OBO_TERM_TAGS = ("id","is_anonymous","name","namespace","alt_id","def","comment","subset",
     "synonym","xref","is_a","intersection_of","union_of","disjoint_from","relationship","is_obsolete",
-    "replaced_by","consider","created_by","creation_date");
+    "replaced_by","consider","created_by","creation_date","context", "growth_stage", "status");
 
 
 
@@ -144,6 +148,7 @@ my $ignore_checks;
 my $quote;
 my $td_scale_category_count = $DEFAULT_TD_SCALE_CATEGORY_COUNT;
 my $use_preferred_synonyms;
+my $use_context_properties;
 GetOptions("v" => \$verbose,
            "o=s" => \$obo_output,
            "u=s" => \$obo_user,
@@ -152,7 +157,8 @@ GetOptions("v" => \$verbose,
            "f" => \$ignore_checks,
            "q" => \$quote,
            "c=s" => \$td_scale_category_count,
-           "use-preferred-synonyms" => \$use_preferred_synonyms);
+           "use-preferred-synonyms" => \$use_preferred_synonyms,
+	   "use-context-properties" => \$use_context_properties);
 my $wb_file = shift;
 
 # Make sure workbook file is given
@@ -179,6 +185,7 @@ if ( defined($filter_institution) ) {
     message("   Filter Traits By Institution: $filter_institution");
 }
 $use_preferred_synonyms ? message("   Variable Synonyms: Preferred") : message("   Variable Synonyms: Variable");
+$use_context_properties ? message("   Context Properties: Used")     : message("   Context Properties: Ignored");
 if ( $obo_output ) { 
     message("   OBO Output File: $obo_output");
     message("   Username: $obo_user");
@@ -918,6 +925,11 @@ sub OBOAddVariables {
         my $scale = findElement($scales, "Scale name", $variable->{'Scale name'});
 
         my $variable_xref = defined($variable->{'Variable Xref'}) ? $variable->{'Variable Xref'} : "";
+	my $variable_context_of_use = defined($variable->{'Context of use'}) ? $variable->{'Context of use'} : "";
+	my $variable_growth_stage = defined($variable->{'Growth stage'}) ? $variable->{'Growth stage'} : "";
+	my $variable_status = defined($variable->{'Variable status'}) ? $variable->{'Growth stage'} : "";
+
+
         my $variable_def = "";
         if ( defined($trait->{'Trait description'}) ) {
             $variable_def .= "TRAIT: " . $trait->{'Trait description'};
@@ -945,7 +957,7 @@ sub OBOAddVariables {
 
         my %items = (
             id => generateID($root_id, $variable->{'Variable ID'}),
-            def => "\"" . $variable_def . "\" [" . $variable_xref . "]",
+            def => "\"" . $variable_def . "\" [" . $variable_xref . "] [context of use: " . $variable_context_of_use . "] [growth stage: " . $variable_growth_stage . "] [status: " . $variable_status . "]",
             namespace => $namespace,
             relationship1 => "variable_of " . generateID($root_id, $trait->{'Trait ID'}),
             relationship2 => "variable_of " . generateID($root_id, $method->{'Method ID'}),
