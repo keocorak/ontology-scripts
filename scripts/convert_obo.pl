@@ -157,7 +157,7 @@ $contents = convertNamespaces($default_namespace, $namespaces, $contents);
 $contents = replaceNameZero($contents);
 
 # Remove DBXrefs
-$contents = removeDBXrefs($contents);
+#$contents = removeDBXrefs($contents);
 
 # Remove Synonyms
 if ( defined($remove_synonyms) ) {
@@ -300,11 +300,11 @@ sub replaceNameZero {
 ##
 ## Returns: updated file contents
 ######
-sub removeDBXrefs {
-    my $contents = shift;
-    $contents =~ s/^def: (.*) \[.*\]$/def: $1 \[\]/gm;
-    return $contents;
-}
+#sub removeDBXrefs {
+#    my $contents = shift;
+#   $contents =~ s/^def: (.*) \[.*\]$/def: $1 \[\]/gm;
+#    return $contents;
+#}
 
 
 ######

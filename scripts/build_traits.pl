@@ -130,7 +130,7 @@ my $CO_ID_LENGTH = 7;
 my $OBO_VERSION = 1.2;
 my @OBO_TERM_TAGS = ("id","is_anonymous","name","namespace","alt_id","def","comment","subset",
     "synonym","xref","is_a","intersection_of","union_of","disjoint_from","relationship","is_obsolete",
-    "replaced_by","consider","created_by","creation_date","context", "growth_stage", "status");
+    "replaced_by","consider","created_by","creation_date");
 
 
 
@@ -927,8 +927,7 @@ sub OBOAddVariables {
         my $variable_xref = defined($variable->{'Variable Xref'}) ? $variable->{'Variable Xref'} : "";
 	my $variable_context_of_use = defined($variable->{'Context of use'}) ? $variable->{'Context of use'} : "";
 	my $variable_growth_stage = defined($variable->{'Growth stage'}) ? $variable->{'Growth stage'} : "";
-	my $variable_status = defined($variable->{'Variable status'}) ? $variable->{'Growth stage'} : "";
-
+	my $variable_status = defined($variable->{'Variable status'}) ? $variable->{'Variable status'} : "";
 
         my $variable_def = "";
         if ( defined($trait->{'Trait description'}) ) {
@@ -957,7 +956,7 @@ sub OBOAddVariables {
 
         my %items = (
             id => generateID($root_id, $variable->{'Variable ID'}),
-            def => "\"" . $variable_def . "\" [" . $variable_xref . "] [context of use: " . $variable_context_of_use . "] [growth stage: " . $variable_growth_stage . "] [status: " . $variable_status . "]",
+	    def => "\"" . $variable_def . " CONTEXT: " . $variable_context_of_use . " GROWTH_STAGE: " . $variable_growth_stage . " STATUS: " . $variable_status . "\" []",
             namespace => $namespace,
             relationship1 => "variable_of " . generateID($root_id, $trait->{'Trait ID'}),
             relationship2 => "variable_of " . generateID($root_id, $method->{'Method ID'}),
